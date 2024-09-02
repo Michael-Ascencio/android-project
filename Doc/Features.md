@@ -28,7 +28,7 @@ en que periodo de tiempo realizará el ahorro o si simplemente se saltará ese d
 5. Evadir el ahorro con una descripción del porqué se evade.
 
 6. Si el usuario tiene un ahorro activo, podrá visualizar el histórico de cuanto ha ahorrado hasta el momento en el cual solo se pueda acceder
-   mediante biometría - contraseña
+mediante biometría - contraseña
 
 7. Ver el historial de ahorro con el cual solo se pueda acceder mediante biometría - contraseña.
 
