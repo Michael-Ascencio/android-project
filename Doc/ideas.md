@@ -26,7 +26,7 @@ Siendo una app que se manejara entre usuarios hispanohablantes, se implementará
 - [Goodbudget](https://play.google.com/store/apps/details?id=com.dayspringtech.envelopes&hl=es_CO)
 - [Mint Mobile](https://play.google.com/store/apps/details?id=com.uvnv.mintsim&hl=es_CO)
 
-## Idea 3: Recordatorios
+## Idea 3: Recordatorios "Yuko - Seleccionada"
 
 Aplicación en la cual se pueden programar recordatorios, ya sea de comida, de ahorros o recordatorios como cumpleaños para personas que son un poco olvidadizas.
 con ayuda de la API de Google "Calendar" así tener recordatorios más intrusivos, en el caso de ahorros, tener un botón en el cual se oprima cada plazo de ahorro
