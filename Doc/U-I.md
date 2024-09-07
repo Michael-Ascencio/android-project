@@ -14,23 +14,27 @@ presentan las principales pantallas:
    en una lista del más reciente al más antiguo.
 
    ![Main](images/RecordatorioMain.png)
+   
 
-2. Crear recordatorio
+3. Crear recordatorio
 
    Cuando el usuario cree un recordatorio podra ponerle descripción, titulo fecha y hora de recordatorio.
 
    ![Crear Recordatorio](images/CrearRecordatorio.png)
+   
 
-3. Recordatorio intermietente
+5. Recordatorio intermietente
 
    El usuario podra crear recordatorios que suenen más de una vez en caso de ser necesario
    como crear recordatorios de medicamentos ETC.
 
    ![Recordatorio intermitente](images/RecordatorioIntermitente.png)
+   
 
-4. Modificadores de recordatorios
+7. Modificadores de recordatorios
 
   El usuario podra modificar o eliminar el recordatorio oprimiendo en los 3 puntos
+  
   ![Modificadores](images/OpcionesRecordatorio.png)
 
 5. Eliminar y modificar
@@ -61,7 +65,9 @@ presentan las principales pantallas:
    El usuario podra crear un ahorro en el cual debe escoger con cuanta intensidad quiere ahorrar.
    
    ![Crear Ahorro](images/AhorroCrear.png)
+   
    ![Modos de ahorro](images/AhorroExpandible.png)
+   
 
 10. Menú hamburguesa
 
