@@ -13,58 +13,58 @@ presentan las principales pantallas:
    Cuando el usuario ingrese a la aplicaicón verá una lista con los recordatorios que ha creado
    en una lista del más reciente al más antiguo.
 
-   ![Main](Doc/images/RecordatorioMain.png)
+   ![Main](images/RecordatorioMain.png)
 
 2. Crear recordatorio
 
    Cuando el usuario cree un recordatorio podra ponerle descripción, titulo fecha y hora de recordatorio.
 
-   ![Crear Recordatorio](Doc/images/CrearRecordatorio.png)
+   ![Crear Recordatorio](images/CrearRecordatorio.png)
 
 3. Recordatorio intermietente
 
    El usuario podra crear recordatorios que suenen más de una vez en caso de ser necesario
    como crear recordatorios de medicamentos ETC.
 
-   ![Recordatorio intermitente](Doc/images/RecordatorioIntermitente.png)
+   ![Recordatorio intermitente](images/RecordatorioIntermitente.png)
 
 4. Modificadores de recordatorios
 
   El usuario podra modificar o eliminar el recordatorio oprimiendo en los 3 puntos
-  ![Modificadores](Doc/images/OpcionesRecordatorio.png)
+  ![Modificadores](images/OpcionesRecordatorio.png)
 
 5. Eliminar y modificar
    
    En caso de ser necesario, el usuario podra eliminar y/o modificar el recordatorio que ya no necesite
    o que desee cambien por algúna razón accediendo al menú de los 3 puntos
 
-  ![Modificar - Eliminar](Doc/images/ModificarRecordatorio.png)
+  ![Modificar - Eliminar](images/ModificarRecordatorio.png)
 
-  ![Eliminar confirmación](Doc/images/EliminarRecordatorio.png)
+  ![Eliminar confirmación](images/EliminarRecordatorio.png)
 
 6. Ingreso biometrico
 
    Para acceder al menú de ahorros se requerirá de acceso biométrico o mediante contraseña por ser datos sensibles
    del usuario.
 
-   ![Biometrico](Doc/images/IngresoBiometrico.png)
+   ![Biometrico](images/IngresoBiometrico.png)
 
 7. Menú de ahorros
 
    El usuario podra visualizar su menú de ahorros en caso de tener un ahorro o si no tiene ahorros
    podra visualizar un botón para iniciar su ahorro
 
-   ![Sin Ahorros](Doc/images/AhorroMain.png)
+   ![Sin Ahorros](images/AhorroMain.png)
 
 8. Crear ahorros
 
    El usuario podra crear un ahorro en el cual debe escoger con cuanta intensidad quiere ahorrar.
    
-   ![Crear Ahorro](Doc/images/AhorroCrear.png)
-   ![Modos de ahorro](Doc/images/AhorroExpandible.png)
+   ![Crear Ahorro](images/AhorroCrear.png)
+   ![Modos de ahorro](images/AhorroExpandible.png)
 
 10. Menú hamburguesa
 
   El usuario dispondrá de un menú tipo hamburguesa para poder acceder fácilmente a apartados necesarios.
   
-  ![Menú](Doc/images/MenuHambur.png)
+  ![Menú](images/MenuHambur.png)
