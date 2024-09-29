@@ -3,10 +3,14 @@ package com.example.myapplication.navigation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,12 +21,53 @@ import com.example.myapplication.R
 
 @Composable
 fun NavBarHeader(){
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo",
-            modifier = Modifier.size(100.dp).padding(top = 10.dp))
+            modifier = Modifier
+                .size(100.dp)
+                .padding(top = 10.dp))
         Text(text = "No lo se", modifier = Modifier.padding(top = 10.dp))
     }
+}
+
+@Composable
+fun NavBarBody(items : List<NavigationItem>,
+               currentRoute : String?,
+               onClick: (NavigationItem) -> Unit){
+    items.forEachIndexed { index, navigationItem -> NavigationDrawerItem(
+        //colors se usará con el parametro navigationItemDefaults para personalizar el color de fondo
+        colors = NavigationDrawerItemDefaults.colors(
+
+        ),
+        label = {
+            Text(text = navigationItem.title)
+        },
+        selected = currentRoute == navigationItem.route,
+        onClick = {
+            onClick(navigationItem)
+        },
+        icon = {
+            Icon(imageVector = if (currentRoute == navigationItem.route){
+                    navigationItem.selectedIcon
+                }
+                else{
+                    navigationItem.unselectedIcon
+                }, contentDescription = navigationItem.title
+            )
+        },
+
+        //badge se usara para mostrar el numero de algún item que necesite un contador desde el menú como por ejemplo ahorros programados
+        badge = {
+            navigationItem.badgeCount?.let{
+                Text(text = it.toString())
+            }
+        },
+        modifier = Modifier.padding(
+            PaddingValues(horizontal = 12.dp, vertical = 8.dp))
+    )}
 }
