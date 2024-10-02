@@ -16,26 +16,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.*
 
 @Composable
-fun HomeScreen3(innerPadding: PaddingValues) {
+fun HomeScreen4(innerPadding: PaddingValues) {
     val context = LocalContext.current
 
+    // Variables de estado
     var selectedFrequency by remember { mutableStateOf("Diario") }
     var expanded by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf("Selecciona la fecha") }
     var selectedTime by remember { mutableStateOf("Selecciona la hora") }
 
-    var nombreAhorro by remember { mutableStateOf("") }
+    var recordatorioTitulo by remember { mutableStateOf("") }
     var shortDescription by remember { mutableStateOf("") }
     var longDescription by remember { mutableStateOf("") }
+    var reminderRepeat by remember { mutableStateOf(false) } // Estado de la Checkbox
 
     val calendar = Calendar.getInstance()
 
-    // Date picker dialog
+    // Dialogo para seleccionar la fecha
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
@@ -43,7 +46,7 @@ fun HomeScreen3(innerPadding: PaddingValues) {
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Time picker dialog
+    // Dialogo para seleccionar la hora
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
@@ -56,7 +59,7 @@ fun HomeScreen3(innerPadding: PaddingValues) {
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-            .background(Color(0xFFFEE2C0))  // Amarillo
+            .background(Color(0xFFF4E0E1))  // Fondo rosa pálido
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -86,15 +89,15 @@ fun HomeScreen3(innerPadding: PaddingValues) {
             ) {
                 // Título
                 BasicTextField(
-                    value = nombreAhorro,
-                    onValueChange = { nombreAhorro = it },
+                    value = recordatorioTitulo,
+                    onValueChange = { recordatorioTitulo = it },
                     decorationBox = { innerTextField ->
                         Row(
                             Modifier
                                 .background(Color.Transparent)
                                 .padding(4.dp)
                         ) {
-                            if (nombreAhorro.isEmpty()) {
+                            if (recordatorioTitulo.isEmpty()) {
                                 Text("Título", color = Color.Gray)
                             }
                             innerTextField()
@@ -133,55 +136,68 @@ fun HomeScreen3(innerPadding: PaddingValues) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Caja para descripción de la meta del ahorro
+        // Caja para la descripción larga del recordatorio
         TextField(
             value = longDescription,
             onValueChange = { longDescription = it },
-            label = { Text("Descripción de la meta de ahorro") },
+            label = { Text("Esta es una breve descripción...") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Dropdown for frequency
-        Text("Selecciona cada cuanto quieres que suene el recordatorio.", fontSize = 16.sp)
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = true }
-                .background(Color.Gray)
-                .padding(8.dp)
+        // Checkbox para repetir el recordatorio
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = selectedFrequency, fontSize = 16.sp)
+            Checkbox(
+                checked = reminderRepeat,
+                onCheckedChange = { reminderRepeat = it }
+            )
+            Text("¿Desea que el recordatorio suene más de una vez?")
         }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            listOf("Diario", "Semanal", "Quincenal", "Mensual").forEach { frequency ->
-                DropdownMenuItem(
-                    text = { Text(text = frequency) },
-                    onClick = {
-                        selectedFrequency = frequency
-                        expanded = false
-                    }
-                )
+        if (reminderRepeat) {
+            // Dropdown para seleccionar frecuencia (si la checkbox está seleccionada)
+            Text("Seleccione cada cuanto quiere que suene el recordatorio.", fontSize = 16.sp)
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true }
+                    .background(Color.LightGray)
+                    .padding(8.dp)
+            ) {
+                Text(text = selectedFrequency, fontSize = 16.sp)
             }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                listOf("Diario", "Semanal", "Quincenal", "Mensual").forEach { frequency ->
+                    DropdownMenuItem(
+                        text = { Text(text = frequency) },
+                        onClick = {
+                            selectedFrequency = frequency
+                            expanded = false
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Selección de fecha
+        Text("Selecciona la fecha y hora inicial del recordatorio.", fontSize = 16.sp)
 
-        // Date picker
-        Text("Selecciona la fecha y hora inicial del ahorro.", fontSize = 16.sp)
-
-        // Date
+        // Fecha
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { datePickerDialog.show() }
-                .background(Color.Gray)
+                .background(Color.LightGray)
                 .padding(8.dp)
         ) {
             Text(text = selectedDate, fontSize = 16.sp)
@@ -189,12 +205,12 @@ fun HomeScreen3(innerPadding: PaddingValues) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Time picker
+        // Selección de hora
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { timePickerDialog.show() }
-                .background(Color.Gray)
+                .background(Color.LightGray)
                 .padding(8.dp)
         ) {
             Text(text = selectedTime, fontSize = 16.sp)
@@ -205,7 +221,7 @@ fun HomeScreen3(innerPadding: PaddingValues) {
         // Botón de Crear
         Button(
             onClick = {
-                Toast.makeText(context, "Ahorro creado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Recordatorio creado", Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.fillMaxWidth()
         ) {

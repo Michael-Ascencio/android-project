@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.myapplication.screens.HomeScreen
 import com.example.myapplication.screens.HomeScreen2
 import com.example.myapplication.screens.HomeScreen3
+import com.example.myapplication.screens.HomeScreen4
 
 @Composable
 fun GraficaDeNavegacion( navController: NavHostController,
@@ -23,6 +24,9 @@ fun GraficaDeNavegacion( navController: NavHostController,
             }
             composable(Pantallas.Home3.route){
                 HomeScreen3(innerPadding = innerPadding)
+            }
+            composable(Pantallas.Home4.route){
+                HomeScreen4(innerPadding = innerPadding)
             }
         }
     }

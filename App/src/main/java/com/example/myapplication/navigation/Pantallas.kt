@@ -7,4 +7,6 @@ sealed class Pantallas(var route: String){
     object Home2 : Pantallas("home2")
 
     object Home3 : Pantallas("home3")
+
+    object Home4 : Pantallas("home4")
 }
