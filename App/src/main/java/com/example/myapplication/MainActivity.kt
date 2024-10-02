@@ -9,7 +9,6 @@ import androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,9 +28,9 @@ import androidx.compose.material.icons.automirrored.outlined.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.navigation.GraficaDeNavegacion
@@ -39,39 +38,42 @@ import com.example.myapplication.navigation.NavBarBody
 import com.example.myapplication.navigation.NavBarHeader
 import com.example.myapplication.navigation.NavigationItem
 import com.example.myapplication.navigation.Pantallas
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
 
 class MainActivity : AppCompatActivity() {
 
     private var canAuthenticate = false
-    //lateinit se usara para inicializarlo mas tarde y tener un monitoreo
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
-    private fun setupAuth(){
-        if(BiometricManager.from(this).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-            == BIOMETRIC_SUCCESS){
+
+    private fun setupAuth() {
+        if (BiometricManager.from(this).canAuthenticate(
+                BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            ) == BIOMETRIC_SUCCESS
+        ) {
             canAuthenticate = true
 
             promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Autentificación Biometrica")
+                .setTitle("Autenticación Biométrica")
                 .setSubtitle("Ingresa con tu huella o contraseña")
-                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                .setAllowedAuthenticators(
+                    BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                )
                 .build()
         }
     }
 
-    private fun authenticate(auth: (auth: Boolean) -> Unit) {
+    private fun authenticate(authCallback: (Boolean) -> Unit) {
         if (canAuthenticate) {
             BiometricPrompt(this, ContextCompat.getMainExecutor(this),
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-
-                        auth(true)
+                        authCallback(true)
                     }
                 }).authenticate(promptInfo)
         } else {
-            auth(true)
+            authCallback(true)
         }
     }
 
@@ -79,170 +81,218 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        setupAuth()
         setContent {
             MyApplicationTheme {
-                var auth by remember { mutableStateOf(false) } // Mueve esto dentro del bloque de composición
+                MyAppContent(authenticate = { authCallback ->
+                    authenticate(authCallback)
+                })
+            }
+        }
+    }
+}
 
-                //Lista de opciones que se veran reflejados en el menú
-                val items = listOf(
-                    NavigationItem(
-                        title = { Text(text = stringResource(R.string.home)) },
-                        route = Pantallas.Home.route,
-                        selectedIcon = Icons.Filled.Home,
-                        unselectedIcon = Icons.Outlined.Home,
-                    ),
-                    NavigationItem(
-                        title = { Text(text = stringResource(R.string.remind)) },
-                        route = Pantallas.Home2.route,
-                        selectedIcon = Icons.AutoMirrored.Filled.Send,
-                        unselectedIcon = Icons.AutoMirrored.Outlined.Send,
-                    ),
-                    NavigationItem(
-                        title = { Text(text = stringResource(R.string.favorite)) },
-                        route = Pantallas.Home3.route,
-                        selectedIcon = Icons.Filled.FavoriteBorder,
-                        unselectedIcon = Icons.Outlined.FavoriteBorder,
-                    ),
-                    NavigationItem(
-                        title = { Text(text = stringResource(R.string.saving)) },
-                        route = Pantallas.Home4.route,
-                        selectedIcon = Icons.Filled.DateRange,
-                        unselectedIcon = Icons.Outlined.DateRange,
-                    ),NavigationItem(
-                        title = { Text(text = stringResource(R.string.history)) },
-                        route = "",
-                        selectedIcon = Icons.AutoMirrored.Filled.List,
-                        unselectedIcon = Icons.AutoMirrored.Outlined.List,
-                    ),
-                    NavigationItem(
-                        title = { Text(text = stringResource(R.string.graph)) },
-                        route = "",
-                        selectedIcon = Icons.AutoMirrored.Filled.List,
-                        unselectedIcon = Icons.AutoMirrored.Outlined.List,
-                    ),
-                    NavigationItem(
-                        title = { Text(text = stringResource(R.string.program_saving)) },
-                        route = "",
-                        selectedIcon = Icons.Filled.DateRange,
-                        unselectedIcon = Icons.Outlined.DateRange,
-                    ),NavigationItem(
-                        title = { Text(text = stringResource(R.string.wastebasket)) },
-                        route = "",
-                        selectedIcon = Icons.Filled.Delete,
-                        unselectedIcon = Icons.Outlined.Delete,
-                    ),
-                    NavigationItem(
-                        title = { Text(text = stringResource(R.string.log_out)) },
-                        route = "",
-                        selectedIcon = Icons.AutoMirrored.Filled.ExitToApp,
-                        unselectedIcon = Icons.AutoMirrored.Outlined.ExitToApp
-                    ),
-                )
-                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-                val scope = rememberCoroutineScope()
-                val navController = rememberNavController()
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit) {
+    var auth by remember { mutableStateOf(false) }
 
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                //Parametro para que el menu quede subrallado en la opción que esté
-                val currentRoute = navBackStackEntry?.destination?.route
+    // Lista de opciones del menú
+    val items = listOf(
+        NavigationItem(
+            title = { Text(text = "Home") },
+            route = Pantallas.Home.route,
+            selectedIcon = Icons.Filled.Home,
+            unselectedIcon = Icons.Outlined.Home,
+        ),
+        NavigationItem(
+            title = { Text(text = "Remind") },
+            route = Pantallas.Home2.route,
+            selectedIcon = Icons.AutoMirrored.Filled.Send,
+            unselectedIcon = Icons.AutoMirrored.Outlined.Send,
+        ),
+        NavigationItem(
+            title = { Text(text = "Favorite") },
+            route = Pantallas.Home3.route,
+            selectedIcon = Icons.Filled.FavoriteBorder,
+            unselectedIcon = Icons.Outlined.FavoriteBorder,
+        ),
+        NavigationItem(
+            title = { Text(text = "Saving") },
+            route = Pantallas.Home4.route,
+            selectedIcon = Icons.Filled.DateRange,
+            unselectedIcon = Icons.Outlined.DateRange,
+        ),
+        NavigationItem(
+            title = { Text(text = "History") },
+            route = "",
+            selectedIcon = Icons.AutoMirrored.Filled.List,
+            unselectedIcon = Icons.AutoMirrored.Outlined.List,
+        ),
+        NavigationItem(
+            title = { Text(text = "Graph") },
+            route = "",
+            selectedIcon = Icons.AutoMirrored.Filled.List,
+            unselectedIcon = Icons.AutoMirrored.Outlined.List,
+        ),
+        NavigationItem(
+            title = { Text(text = "Program Saving") },
+            route = "",
+            selectedIcon = Icons.Filled.DateRange,
+            unselectedIcon = Icons.Outlined.DateRange,
+        ),
+        NavigationItem(
+            title = { Text(text = "Wastebasket") },
+            route = "",
+            selectedIcon = Icons.Filled.Delete,
+            unselectedIcon = Icons.Outlined.Delete,
+        ),
+        NavigationItem(
+            title = { Text(text = "Log Out") },
+            route = "",
+            selectedIcon = Icons.AutoMirrored.Filled.ExitToApp,
+            unselectedIcon = Icons.AutoMirrored.Outlined.ExitToApp
+        ),
+    )
 
-                val topbarTitle =
-                    if(currentRoute != null){
-                        items[items.indexOfFirst {
-                            it.route == currentRoute
-                        }].title
-                    }
-                    else{
-                        items[0].title
-                    }
-                //El espacio donde se muestra el menú desplegable con modal Drawer
-                ModalNavigationDrawer(
-                    gesturesEnabled = drawerState.isOpen, drawerContent = {
-                        ModalDrawerSheet(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(340.dp) //Altura de la pantalla
-                        ) {
-                            // Centrado vertical del contenido dentro del menú
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .padding(horizontal = 16.dp), // Padding opcional para separación lateral
-                                verticalArrangement = Arrangement.Center, // Centra el contenido verticalmente
-                                horizontalAlignment = Alignment.Start // Mantiene el contenido alineado a la izquierda
-                            ) {
-                                NavBarHeader(onImageClick = {
-                                    // Acción a realizar al hacer clic en la imagen
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
-                                })
-                                Spacer(modifier = Modifier.height(12.dp))
-                                NavBarBody(items = items, currentRoute = currentRoute) { currentNavigationItem ->
-                                    navController.navigate(currentNavigationItem.route) {
-                                        navController.graph.startDestinationRoute?.let { route ->
-                                            popUpTo(route) {
-                                                saveState = true
-                                            }
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
-                                }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val navController = rememberNavController()
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val topbarTitle = items.find { it.route == currentRoute }?.title ?: items[0].title
+
+    ModalNavigationDrawer(
+        gesturesEnabled = drawerState.isOpen,
+        drawerContent = {
+            DrawerContent(
+                items = items,
+                currentRoute = currentRoute,
+                drawerState = drawerState,
+                scope = scope,
+                navController = navController
+            )
+        },
+        drawerState = drawerState
+    ) {
+        Scaffold(
+            topBar = {
+                MyTopAppBar(
+                    auth = auth,
+                    onAuthenticate = { shouldAuthenticate ->
+                        if (shouldAuthenticate) {
+                            authenticate { success ->
+                                auth = success
                             }
+                        } else {
+                            auth = false
                         }
-                    }, drawerState = drawerState) {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(
-                                title = {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        // Coloca los botones de Recordatorio y Ahorro con espacio equitativo
-                                        Row(modifier = Modifier.weight(1f)) {
-                                            IconButton(onClick = { /* Acción de Recordatorio */ }, modifier = Modifier.weight(1f)) {
-                                                Text(text = "Recordatorio")
-                                            }
-                                            IconButton(onClick = {
-                                                if(auth) {
-                                                    auth = false
-                                                }else{
-                                                    authenticate {
-                                                        auth = it
-                                                    }
-                                                }
+                    },
+                    scope = scope,
+                    drawerState = drawerState
+                )
+            }
+        ) { innerPadding ->
+            GraficaDeNavegacion(navController = navController, innerPadding = innerPadding)
+        }
+    }
+}
 
-                                            }, modifier = Modifier.weight(1f)) {
-                                                Text(text = "Ahorro")
-                                            }
-                                        }
-                                        // Coloca el icono de perfil a la derecha
-                                        IconButton(onClick = { /* Acción de perfil */ }) {
-                                            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Perfil")
-                                        }
-                                    }
-                                },
-                                navigationIcon = {
-                                    IconButton(onClick = {
-                                        scope.launch {
-                                            drawerState.open()
-                                        }
-                                    }) {
-                                        Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
-                                    }
-                                }
-                            )
+@Composable
+fun DrawerContent(
+    items: List<NavigationItem>,
+    currentRoute: String?,
+    drawerState: DrawerState,
+    scope: CoroutineScope,
+    navController: NavController
+) {
+    ModalDrawerSheet(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(340.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+            NavBarHeader(onImageClick = {
+                scope.launch {
+                    drawerState.close()
+                }
+            })
+            Spacer(modifier = Modifier.height(12.dp))
+            NavBarBody(items = items, currentRoute = currentRoute) { currentNavigationItem ->
+                navController.navigate(currentNavigationItem.route) {
+                    navController.graph.startDestinationRoute?.let { route ->
+                        popUpTo(route) {
+                            saveState = true
                         }
-                    ) { innerPadding: PaddingValues ->
-                        GraficaDeNavegacion(navController = navController, innerPadding = innerPadding)
                     }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+                scope.launch {
+                    drawerState.close()
                 }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyTopAppBar(
+    auth: Boolean,
+    onAuthenticate: (Boolean) -> Unit,
+    scope: CoroutineScope,
+    drawerState: DrawerState
+) {
+    TopAppBar(
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Botones de Recordatorio y Ahorro
+                Row(modifier = Modifier.weight(1f)) {
+                    IconButton(
+                        onClick = { /* Acción de Recordatorio */ },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Recordatorio")
+                    }
+                    IconButton(
+                        onClick = {
+                            if (auth) {
+                                onAuthenticate(false)
+                            } else {
+                                onAuthenticate(true)
+                            }
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Ahorro")
+                    }
+                }
+                // Icono de perfil a la derecha
+                IconButton(onClick = { /* Acción de perfil */ }) {
+                    Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Perfil")
+                }
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = {
+                scope.launch {
+                    drawerState.open()
+                }
+            }) {
+                Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menú")
+            }
+        }
+    )
 }
