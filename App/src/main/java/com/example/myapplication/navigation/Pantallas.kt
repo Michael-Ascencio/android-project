@@ -2,11 +2,23 @@ package com.example.myapplication.navigation
 
 sealed class Pantallas(var route: String){
 
-    object Home : Pantallas("home")
+    object RemindScreen : Pantallas("recordatorio")
 
-    object Home2 : Pantallas("home2")
+    object SavingScreen : Pantallas("ahorro")
 
-    object Home3 : Pantallas("home3")
+    object CreateReminderScreen : Pantallas("creador_de_recordatorios")
 
-    object Home4 : Pantallas("home4")
+    object CreateSavingScreen : Pantallas("creador_de_ahorros")
+
+    object FavoriteScreen : Pantallas("favoritos")
+
+    object GraphScreen : Pantallas("graph")
+
+    object HistoryScreen : Pantallas("historial")
+
+    object ProgramSavingScreen : Pantallas("programar_ahorro")
+
+    object WastebasketScreen : Pantallas("papelera")
+
+    object ExitScreen : Pantallas("exit")
 }

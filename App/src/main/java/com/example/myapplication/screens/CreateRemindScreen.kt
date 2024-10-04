@@ -18,10 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.myapplication.navigation.Pantallas
 import java.util.*
 
 @Composable
-fun HomeScreen3(innerPadding: PaddingValues) {
+fun CreateRemindScreen(innerPadding: PaddingValues, navController: NavController) {
     val context = LocalContext.current
 
     var selectedFrequency by remember { mutableStateOf("Diario") }
@@ -35,7 +37,7 @@ fun HomeScreen3(innerPadding: PaddingValues) {
 
     val calendar = Calendar.getInstance()
 
-    // Date picker dialog
+    // Dialogo de fecha
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
@@ -43,7 +45,7 @@ fun HomeScreen3(innerPadding: PaddingValues) {
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Time picker dialog
+    // Dialogo de timer
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
@@ -126,6 +128,7 @@ fun HomeScreen3(innerPadding: PaddingValues) {
             // Botón de "Cerrar" (X)
             IconButton(onClick = {
                 Toast.makeText(context, "Cerrando...", Toast.LENGTH_SHORT).show()
+                navController.navigate(Pantallas.RemindScreen.route)
             }) {
                 Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.Black)
             }

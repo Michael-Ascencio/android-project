@@ -16,13 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.myapplication.navigation.Pantallas
 import java.util.*
 
 @Composable
-fun HomeScreen4(innerPadding: PaddingValues) {
+fun CreateSavingScreen(innerPadding: PaddingValues, navController: NavController) {
     val context = LocalContext.current
 
     // Variables de estado
@@ -129,6 +130,7 @@ fun HomeScreen4(innerPadding: PaddingValues) {
             // Botón de "Cerrar" (X)
             IconButton(onClick = {
                 Toast.makeText(context, "Cerrando...", Toast.LENGTH_SHORT).show()
+                navController.navigate(Pantallas.SavingScreen.route)
             }) {
                 Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.Black)
             }

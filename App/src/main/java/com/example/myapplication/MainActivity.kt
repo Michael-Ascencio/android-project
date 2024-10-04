@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -28,6 +26,7 @@ import androidx.compose.material.icons.automirrored.outlined.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -100,56 +99,50 @@ fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit) {
     // Lista de opciones del menú
     val items = listOf(
         NavigationItem(
-            title = { Text(text = "Home") },
-            route = Pantallas.Home.route,
-            selectedIcon = Icons.Filled.Home,
-            unselectedIcon = Icons.Outlined.Home,
-        ),
-        NavigationItem(
-            title = { Text(text = "Remind") },
-            route = Pantallas.Home2.route,
+            title = { Text(text = stringResource(R.string.remind)) },
+            route = Pantallas.RemindScreen.route,
             selectedIcon = Icons.AutoMirrored.Filled.Send,
             unselectedIcon = Icons.AutoMirrored.Outlined.Send,
         ),
         NavigationItem(
-            title = { Text(text = "Favorite") },
-            route = Pantallas.Home3.route,
+            title = { Text(text = stringResource(R.string.favorite)) },
+            route = Pantallas.FavoriteScreen.route,
             selectedIcon = Icons.Filled.FavoriteBorder,
             unselectedIcon = Icons.Outlined.FavoriteBorder,
         ),
         NavigationItem(
-            title = { Text(text = "Saving") },
-            route = Pantallas.Home4.route,
+            title = { Text(text = stringResource(R.string.saving)) },
+            route = Pantallas.SavingScreen.route, //Toca implementar el auth
             selectedIcon = Icons.Filled.DateRange,
             unselectedIcon = Icons.Outlined.DateRange,
         ),
         NavigationItem(
-            title = { Text(text = "History") },
-            route = "",
+            title = { Text(text = stringResource(R.string.history)) },
+            route = Pantallas.HistoryScreen.route,
             selectedIcon = Icons.AutoMirrored.Filled.List,
             unselectedIcon = Icons.AutoMirrored.Outlined.List,
         ),
         NavigationItem(
-            title = { Text(text = "Graph") },
-            route = "",
+            title = { Text(text = stringResource(R.string.graph)) },
+            route = Pantallas.GraphScreen.route,
             selectedIcon = Icons.AutoMirrored.Filled.List,
             unselectedIcon = Icons.AutoMirrored.Outlined.List,
         ),
         NavigationItem(
-            title = { Text(text = "Program Saving") },
-            route = "",
+            title = { Text(text = stringResource(R.string.program_saving)) },
+            route = Pantallas.ProgramSavingScreen.route,
             selectedIcon = Icons.Filled.DateRange,
             unselectedIcon = Icons.Outlined.DateRange,
         ),
         NavigationItem(
-            title = { Text(text = "Wastebasket") },
-            route = "",
+            title = { Text(text = stringResource(R.string.wastebasket)) },
+            route = Pantallas.WastebasketScreen.route,
             selectedIcon = Icons.Filled.Delete,
             unselectedIcon = Icons.Outlined.Delete,
         ),
         NavigationItem(
-            title = { Text(text = "Log Out") },
-            route = "",
+            title = { Text(text = stringResource(R.string.exit)) },
+            route = Pantallas.ExitScreen.route,
             selectedIcon = Icons.AutoMirrored.Filled.ExitToApp,
             unselectedIcon = Icons.AutoMirrored.Outlined.ExitToApp
         ),
@@ -161,8 +154,6 @@ fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
-    val topbarTitle = items.find { it.route == currentRoute }?.title ?: items[0].title
 
     ModalNavigationDrawer(
         gesturesEnabled = drawerState.isOpen,
@@ -190,12 +181,13 @@ fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit) {
                             auth = false
                         }
                     },
+                    navController = navController,
                     scope = scope,
                     drawerState = drawerState
                 )
             }
         ) { innerPadding ->
-            GraficaDeNavegacion(navController = navController, innerPadding = innerPadding)
+            GraficaDeNavegacion(navController = navController, innerPadding = innerPadding, auth = auth)
         }
     }
 }
@@ -249,6 +241,7 @@ fun DrawerContent(
 fun MyTopAppBar(
     auth: Boolean,
     onAuthenticate: (Boolean) -> Unit,
+    navController: NavController,
     scope: CoroutineScope,
     drawerState: DrawerState
 ) {
@@ -261,7 +254,7 @@ fun MyTopAppBar(
                 // Botones de Recordatorio y Ahorro
                 Row(modifier = Modifier.weight(1f)) {
                     IconButton(
-                        onClick = { /* Acción de Recordatorio */ },
+                        onClick = { navController.navigate(Pantallas.RemindScreen.route) },
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(text = "Recordatorio")
@@ -269,9 +262,11 @@ fun MyTopAppBar(
                     IconButton(
                         onClick = {
                             if (auth) {
-                                onAuthenticate(false)
+                                onAuthenticate(false) // Cerrar sesión
+                                navController.navigate(Pantallas.RemindScreen.route) // Redirigir a Recordatorio
                             } else {
-                                onAuthenticate(true)
+                                onAuthenticate(true) // Iniciar sesión
+                                navController.navigate(Pantallas.SavingScreen.route) // Redirigir a Ahorro
                             }
                         },
                         modifier = Modifier.weight(1f)

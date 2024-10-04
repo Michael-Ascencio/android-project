@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 
 @Composable
-fun HomeScreen2(innerPadding: PaddingValues) {
+fun LockScreen(innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
             .padding(innerPadding)
@@ -27,29 +27,19 @@ fun HomeScreen2(innerPadding: PaddingValues) {
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Primera imagen superior
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background), // Imagen de la pantalla donde estamos (Rcordatorio o Ahorro)
-            contentDescription = "Ahorros",
-            modifier = Modifier
-                .size(150.dp)
-                .padding(8.dp),
-            contentScale = ContentScale.Crop
-        )
-
-        // Texto de título "Ahorros"
+        // Texto de título "Identifiacionq"
         Text(
-            text = "Ahorros",
+            text = "Identificate!!",
             fontSize = 30.sp,
             color = Color.Black
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Segunda imagen inferior
+        // imagen inferior
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background), // Imagen si no hay nada
-            contentDescription = "No tienes ahorros",
+            painter = painterResource(id = R.drawable.lockimage), // Imagen si no hay nada
+            contentDescription = "Sin identificación",
             modifier = Modifier
                 .size(250.dp)
                 .padding(8.dp),
@@ -60,23 +50,11 @@ fun HomeScreen2(innerPadding: PaddingValues) {
 
         // Texto informativo
         Text(
-            text = "Actualmente no tienes ahorros",
+            text = "Debes ingresar tus credenciales para ingresar a esta pantalla",
             fontSize = 18.sp,
             color = Color.Black
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón para crear ahorro
-        Button(
-            onClick = { /* Acción de crear ahorro */ },
-            modifier = Modifier
-                .padding(8.dp)
-                .width(150.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(Color(0xFFE0A53E)) // Cambia el color deo botón
-        ) {
-            Text(text = "Crear Uno", color = Color.White)
-        }
     }
 }

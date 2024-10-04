@@ -1,12 +1,20 @@
 <resources>
     <string name="app_name">My Application</string>
     <string name="home">Inicio</string>
+
     <string name="remind">Recordatorios</string>
+    <string name="remind_title">Recordatorios</string>">
+    <string name="out_remind">Actualmente no cuentas con recordatorios</string>
+
     <string name="favorite">Favoritos</string>
+
     <string name="saving">Ahorros</string>
+    <string name="saving_title">Ahorros</string>
+    <string name="out_saving">Actualmente no cuentas con recordatorios</string>
+
     <string name="history">Historial</string>
     <string name="graph">Gráficas de ahorros</string>
-    <string name="program_saving">Ahorro Programado</string>
+    <string name="program_saving">Ahorros Programados</string>
     <string name="wastebasket">Papelera</string>
-    <string name="log_out">Cerrar Sesión</string>
+    <string name="exit">Salir de la app</string>
 </resources>
