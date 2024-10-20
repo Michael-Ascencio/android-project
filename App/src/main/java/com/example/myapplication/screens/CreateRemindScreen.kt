@@ -20,10 +20,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.Pantallas
+import com.example.myapplication.viewmodel.RecordatoriosViewModel
 import java.util.*
 
 @Composable
-fun CreateRemindScreen(innerPadding: PaddingValues, navController: NavController) {
+fun CreateRemindScreen(
+    viewModel: RecordatoriosViewModel,
+    innerPadding: PaddingValues,
+    navController: NavController
+) {
     val context = LocalContext.current
 
     var selectedFrequency by remember { mutableStateOf("Diario") }

@@ -39,6 +39,7 @@ import com.example.myapplication.navigation.NavigationItem
 import com.example.myapplication.navigation.Pantallas
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import com.example.myapplication.viewmodel.ViewModelReminds
 
 class MainActivity : AppCompatActivity() {
 
@@ -186,8 +187,10 @@ fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit) {
                     drawerState = drawerState
                 )
             }
-        ) { innerPadding ->
-            GraficaDeNavegacion(navController = navController, innerPadding = innerPadding, auth = auth)
+        ) {
+            innerPadding ->
+            val viewModel = ViewModelReminds(dao)
+            GraficaDeNavegacion(viewModel = viewModel, navController = navController, innerPadding = innerPadding, auth = auth)
         }
     }
 }

@@ -18,38 +18,54 @@ import com.example.myapplication.screens.ProgramSavingScreen
 import com.example.myapplication.screens.RemindScreen
 import com.example.myapplication.screens.SavingScreen
 import com.example.myapplication.screens.WastebasketScreen
+import com.example.myapplication.viewmodel.RecordatoriosViewModel
 
 @Composable
-fun GraficaDeNavegacion(navController: NavHostController, innerPadding: PaddingValues, auth: Boolean) {
-    NavHost(navController = navController, startDestination = Pantallas.RemindScreen.route) {
+fun GraficaDeNavegacion(viewModel: RecordatoriosViewModel,
+                        navController: NavHostController,
+                        innerPadding: PaddingValues,
+                        auth: Boolean)
+{
+    NavHost(navController = navController,
+        startDestination = Pantallas.RemindScreen.route)
+
+    {
         composable(Pantallas.RemindScreen.route) {
-            RemindScreen(innerPadding = innerPadding, navController = navController)
+            RemindScreen(viewModel, innerPadding = innerPadding, navController = navController,)
         }
+
         composable(Pantallas.SavingScreen.route) {
-            // Asegúrate de pasar el navController aquí
-            SavingScreenWrapper(auth = auth, innerPadding = innerPadding, navController = navController)
+            SavingScreenWrapper(viewModel, auth = auth, innerPadding = innerPadding, navController = navController)
         }
+
         composable(Pantallas.CreateSavingScreen.route) {
-            CreateSavingScreen(innerPadding = innerPadding, navController = navController)
+            CreateSavingScreen(viewModel, innerPadding = innerPadding, navController = navController)
         }
+
         composable(Pantallas.CreateReminderScreen.route) {
-            CreateRemindScreen(innerPadding = innerPadding, navController = navController)
+            CreateRemindScreen(viewModel, innerPadding = innerPadding, navController = navController)
         }
+
         composable(Pantallas.FavoriteScreen.route) {
-            FavoriteScreen(innerPadding = innerPadding)
+            FavoriteScreen(viewModel, innerPadding = innerPadding)
         }
+
         composable(Pantallas.GraphScreen.route) {
             GraphScreen(innerPadding = innerPadding)
         }
+
         composable(Pantallas.HistoryScreen.route) {
-            HistoryScreen(innerPadding = innerPadding)
+            HistoryScreen(viewModel, innerPadding = innerPadding)
         }
+
         composable(Pantallas.ProgramSavingScreen.route) {
-            ProgramSavingScreen(innerPadding = innerPadding)
+            ProgramSavingScreen(viewModel, innerPadding = innerPadding)
         }
+
         composable(Pantallas.WastebasketScreen.route) {
-            WastebasketScreen(innerPadding = innerPadding)
+            WastebasketScreen(viewModel, innerPadding = innerPadding)
         }
+
         composable(Pantallas.ExitScreen.route) {
             ExitApp()
         }
@@ -63,9 +79,9 @@ fun ExitApp() {
 }
 
 @Composable
-fun SavingScreenWrapper(auth: Boolean, innerPadding: PaddingValues, navController: NavController) {
+fun SavingScreenWrapper(viewModel: RecordatoriosViewModel, auth: Boolean, innerPadding: PaddingValues, navController: NavController) {
     if (auth) {
-        SavingScreen(innerPadding = innerPadding, navController = navController)
+        SavingScreen(viewModel, innerPadding = innerPadding, navController = navController)
     } else {
         // Mostrar algún mensaje o redirigir a la pantalla de autenticación
         LockScreen(innerPadding = innerPadding)

@@ -16,9 +16,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.navigation.Pantallas
+import com.example.myapplication.viewmodel.RecordatoriosViewModel
 
 @Composable
-fun SavingScreen(innerPadding: PaddingValues,  navController: NavController) {
+fun SavingScreen(
+    viewModel: RecordatoriosViewModel,
+    innerPadding: PaddingValues,
+    navController: NavController
+) {
     Column(
         modifier = Modifier
             .padding(innerPadding)

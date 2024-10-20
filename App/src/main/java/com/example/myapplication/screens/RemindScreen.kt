@@ -16,10 +16,15 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.Pantallas
+import com.example.myapplication.viewmodel.RecordatoriosViewModel
 
 
 @Composable
-fun RemindScreen(innerPadding: PaddingValues, navController: NavController) {
+fun RemindScreen(
+    viewModel: RecordatoriosViewModel,
+    innerPadding: PaddingValues,
+    navController: NavController
+) {
     Column(
         modifier = Modifier
             .padding(innerPadding)
