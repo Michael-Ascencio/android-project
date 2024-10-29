@@ -24,27 +24,31 @@ import com.example.myapplication.viewmodel.ViewModelReminds
 import java.util.*
 
 @Composable
-fun CreateSavingScreen(
+fun EditRemindScreen(
     viewModel: ViewModelReminds,
     innerPadding: PaddingValues,
-    navController: NavController
+    navController: NavController,
+    int: Int,
+    string: String?,
+    string1: String?,
+    string2: String?,
+    string3: String?,
+    string4: String?
 ) {
     val context = LocalContext.current
 
-    // Variables de estado
     var selectedFrequency by remember { mutableStateOf("Diario") }
     var expanded by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf("Selecciona la fecha") }
     var selectedTime by remember { mutableStateOf("Selecciona la hora") }
 
-    var recordatorioTitulo by remember { mutableStateOf("") }
+    var nombreAhorro by remember { mutableStateOf("") }
     var shortDescription by remember { mutableStateOf("") }
     var longDescription by remember { mutableStateOf("") }
-    var reminderRepeat by remember { mutableStateOf(false) } // Estado de la Checkbox
 
     val calendar = Calendar.getInstance()
 
-    // Dialogo para seleccionar la fecha
+    // Dialogo de fecha
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
@@ -52,7 +56,7 @@ fun CreateSavingScreen(
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Dialogo para seleccionar la hora
+    // Dialogo de timer
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
@@ -65,7 +69,7 @@ fun CreateSavingScreen(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-            .background(Color(0xFFF4E0E1))  // Fondo rosa pálido
+            .background(Color(0xFFFEE2C0))  // Amarillo
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -95,15 +99,15 @@ fun CreateSavingScreen(
             ) {
                 // Título
                 BasicTextField(
-                    value = recordatorioTitulo,
-                    onValueChange = { recordatorioTitulo = it },
+                    value = nombreAhorro,
+                    onValueChange = { nombreAhorro = it },
                     decorationBox = { innerTextField ->
                         Row(
                             Modifier
                                 .background(Color.Transparent)
                                 .padding(4.dp)
                         ) {
-                            if (recordatorioTitulo.isEmpty()) {
+                            if (nombreAhorro.isEmpty()) {
                                 Text("Título", color = Color.Gray)
                             }
                             innerTextField()
@@ -135,7 +139,7 @@ fun CreateSavingScreen(
             // Botón de "Cerrar" (X)
             IconButton(onClick = {
                 Toast.makeText(context, "Cerrando...", Toast.LENGTH_SHORT).show()
-                navController.navigate(Pantallas.SavingScreen.route)
+                navController.navigate(Pantallas.RemindScreen.route)
             }) {
                 Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.Black)
             }
@@ -143,68 +147,55 @@ fun CreateSavingScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Caja para la descripción larga del recordatorio
+        // Caja para descripción de la meta del ahorro
         TextField(
             value = longDescription,
             onValueChange = { longDescription = it },
-            label = { Text("Esta es una breve descripción...") },
+            label = { Text("Descripción de la meta de ahorro") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Checkbox para repetir el recordatorio
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+        // Dropdown for frequency
+        Text("Selecciona cada cuanto quieres que suene el recordatorio.", fontSize = 16.sp)
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .background(Color.Gray)
+                .padding(8.dp)
         ) {
-            Checkbox(
-                checked = reminderRepeat,
-                onCheckedChange = { reminderRepeat = it }
-            )
-            Text("¿Desea que el recordatorio suene más de una vez?")
+            Text(text = selectedFrequency, fontSize = 16.sp)
         }
 
-        if (reminderRepeat) {
-            // Dropdown para seleccionar frecuencia (si la checkbox está seleccionada)
-            Text("Seleccione cada cuanto quiere que suene el recordatorio.", fontSize = 16.sp)
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expanded = true }
-                    .background(Color.LightGray)
-                    .padding(8.dp)
-            ) {
-                Text(text = selectedFrequency, fontSize = 16.sp)
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            listOf("Diario", "Semanal", "Quincenal", "Mensual").forEach { frequency ->
+                DropdownMenuItem(
+                    text = { Text(text = frequency) },
+                    onClick = {
+                        selectedFrequency = frequency
+                        expanded = false
+                    }
+                )
             }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                listOf("Diario", "Semanal", "Quincenal", "Mensual").forEach { frequency ->
-                    DropdownMenuItem(
-                        text = { Text(text = frequency) },
-                        onClick = {
-                            selectedFrequency = frequency
-                            expanded = false
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Selección de fecha
-        Text("Selecciona la fecha y hora inicial del recordatorio.", fontSize = 16.sp)
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Fecha
+        // Date picker
+        Text("Selecciona la fecha y hora inicial del ahorro.", fontSize = 16.sp)
+
+        // Date
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { datePickerDialog.show() }
-                .background(Color.LightGray)
+                .background(Color.Gray)
                 .padding(8.dp)
         ) {
             Text(text = selectedDate, fontSize = 16.sp)
@@ -212,12 +203,12 @@ fun CreateSavingScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Selección de hora
+        // Time picker
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { timePickerDialog.show() }
-                .background(Color.LightGray)
+                .background(Color.Gray)
                 .padding(8.dp)
         ) {
             Text(text = selectedTime, fontSize = 16.sp)
@@ -228,7 +219,7 @@ fun CreateSavingScreen(
         // Botón de Crear
         Button(
             onClick = {
-                Toast.makeText(context, "Recordatorio creado", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Ahorro creado", Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier.fillMaxWidth()
         ) {

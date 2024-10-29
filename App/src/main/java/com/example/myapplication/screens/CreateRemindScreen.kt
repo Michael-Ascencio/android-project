@@ -3,6 +3,7 @@ package com.example.myapplication.screens
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,18 +17,74 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.myapplication.R
+import com.example.myapplication.models.Reminds
 import com.example.myapplication.navigation.Pantallas
-import com.example.myapplication.viewmodel.RecordatoriosViewModel
+import com.example.myapplication.viewmodel.ViewModelReminds
 import java.util.*
 
 @Composable
 fun CreateRemindScreen(
-    viewModel: RecordatoriosViewModel,
+    viewModel: ViewModelReminds,
     innerPadding: PaddingValues,
     navController: NavController
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()
+            .background(Color(0xFFFFF4FC))  // Rosado
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CreateRemindForm(
+            navController, viewModel,
+            onClose = {
+                Toast.makeText(context, "Cerrando...", Toast.LENGTH_SHORT).show()
+                navController.navigate(Pantallas.RemindScreen.route)
+            },
+            onCreate = { nombreAhorro, shortDescription, longDescription, selectedDate, selectedTime ->
+                if (nombreAhorro.isNotBlank() && shortDescription.isNotBlank() && selectedDate != "Selecciona la fecha" && selectedTime != "Selecciona la hora") {
+                    val nuevoRecordatorio = Reminds(
+                        titulo = nombreAhorro,
+                        descripcion = longDescription,
+                        fecha = selectedDate,
+                        hora = selectedTime,
+                        favorito = false,
+                        borrado = false
+                    )
+                    viewModel.agregarRecordatorio(nuevoRecordatorio)
+                    Toast.makeText(context, "Recordatorio creado", Toast.LENGTH_SHORT).show()
+                    navController.navigate(Pantallas.RemindScreen.route)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Por favor, completa todos los campos.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+            recordatorio = null
+        )
+    }
+}
+
+@Composable
+fun CreateRemindForm(
+    navController: NavController,
+    viewModel: ViewModelReminds,
+    onClose: () -> Unit,
+    onCreate: (String, String, String, String, String) -> Unit,
+    recordatorio: Reminds?
 ) {
     val context = LocalContext.current
 
@@ -42,33 +99,29 @@ fun CreateRemindScreen(
 
     val calendar = Calendar.getInstance()
 
-    // Dialogo de fecha
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
             selectedDate = "$dayOfMonth/${month + 1}/$year"
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Dialogo de timer
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
             selectedTime = String.format("%02d:%02d", hourOfDay, minute)
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        false
     )
 
-    // Estructura de la pantalla
     Column(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize()
-            .background(Color(0xFFFEE2C0))  // Amarillo
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Cabecera (Imagen, Título, Descripción Corta, Botón de cerrar)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,14 +129,27 @@ fun CreateRemindScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Botón de "Añadir Imagen"
             Box(
                 modifier = Modifier
                     .size(100.dp)
-                    .background(Color.LightGray, RoundedCornerShape(8.dp)),
+                    .background(Color.LightGray, RoundedCornerShape(8.dp))
+                    .clickable { /* Manejar el clic para añadir imagen */ },
                 contentAlignment = Alignment.Center
             ) {
-                Text("Añadir\nImagen", fontSize = 16.sp)
+                if (recordatorio?.imagen != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = recordatorio.imagen),
+                        contentDescription = null,
+                        modifier = Modifier.size(100.dp)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.placeholder),
+                        contentDescription = null,
+                        modifier = Modifier.size(100.dp)
+                    )
+                    Text("Añadir\nImagen", fontSize = 16.sp, color = Color.Black)
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -91,7 +157,6 @@ fun CreateRemindScreen(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                // Título
                 BasicTextField(
                     value = nombreAhorro,
                     onValueChange = { nombreAhorro = it },
@@ -110,7 +175,6 @@ fun CreateRemindScreen(
                     textStyle = LocalTextStyle.current.copy(fontSize = 18.sp)
                 )
 
-                // Descripción corta
                 BasicTextField(
                     value = shortDescription,
                     onValueChange = { shortDescription = it },
@@ -130,18 +194,11 @@ fun CreateRemindScreen(
                 )
             }
 
-            // Botón de "Cerrar" (X)
-            IconButton(onClick = {
-                Toast.makeText(context, "Cerrando...", Toast.LENGTH_SHORT).show()
-                navController.navigate(Pantallas.RemindScreen.route)
-            }) {
+            IconButton(onClick = onClose) {
                 Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.Black)
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Caja para descripción de la meta del ahorro
         TextField(
             value = longDescription,
             onValueChange = { longDescription = it },
@@ -149,9 +206,6 @@ fun CreateRemindScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Dropdown for frequency
         Text("Selecciona cada cuanto quieres que suene el recordatorio.", fontSize = 16.sp)
 
         Box(
@@ -179,12 +233,8 @@ fun CreateRemindScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Text("Selecciona la fecha y hora inicial del recordatorio.", fontSize = 16.sp)
 
-        // Date picker
-        Text("Selecciona la fecha y hora inicial del ahorro.", fontSize = 16.sp)
-
-        // Date
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -195,9 +245,6 @@ fun CreateRemindScreen(
             Text(text = selectedDate, fontSize = 16.sp)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Time picker
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -208,13 +255,8 @@ fun CreateRemindScreen(
             Text(text = selectedTime, fontSize = 16.sp)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botón de Crear
         Button(
-            onClick = {
-                Toast.makeText(context, "Ahorro creado", Toast.LENGTH_SHORT).show()
-            },
+            onClick = { onCreate(nombreAhorro, shortDescription, longDescription, selectedDate, selectedTime) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Crear")

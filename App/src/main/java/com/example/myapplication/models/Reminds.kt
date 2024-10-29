@@ -10,10 +10,16 @@ data class Reminds (
     val id: Int = 0,
     @ColumnInfo(name = "titulo")
     val titulo: String = "",
+    @ColumnInfo(name = "imagen")
+    val imagen: String = "",
     @ColumnInfo(name = "descripcion")
     val descripcion: String = "",
     @ColumnInfo(name = "fecha")
     val fecha: String = "",
     @ColumnInfo(name = "hora")
     val hora: String = "",
+    @ColumnInfo(name = "favorito")
+    val favorito: Boolean,
+    @ColumnInfo(name = "borrado")
+    val borrado: Boolean,
 )

@@ -6,10 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.myapplication.screens.CreateRemindScreen
 import com.example.myapplication.screens.CreateSavingScreen
+import com.example.myapplication.screens.EditRemindScreen
+import com.example.myapplication.screens.EditSavingScreen
 import com.example.myapplication.screens.FavoriteScreen
 import com.example.myapplication.screens.GraphScreen
 import com.example.myapplication.screens.HistoryScreen
@@ -18,10 +22,10 @@ import com.example.myapplication.screens.ProgramSavingScreen
 import com.example.myapplication.screens.RemindScreen
 import com.example.myapplication.screens.SavingScreen
 import com.example.myapplication.screens.WastebasketScreen
-import com.example.myapplication.viewmodel.RecordatoriosViewModel
+import com.example.myapplication.viewmodel.ViewModelReminds
 
 @Composable
-fun GraficaDeNavegacion(viewModel: RecordatoriosViewModel,
+fun GraficaDeNavegacion(viewModel: ViewModelReminds,
                         navController: NavHostController,
                         innerPadding: PaddingValues,
                         auth: Boolean)
@@ -31,11 +35,16 @@ fun GraficaDeNavegacion(viewModel: RecordatoriosViewModel,
 
     {
         composable(Pantallas.RemindScreen.route) {
-            RemindScreen(viewModel, innerPadding = innerPadding, navController = navController,)
+            RemindScreen(viewModel,
+                innerPadding = innerPadding,
+                navController = navController,)
         }
 
         composable(Pantallas.SavingScreen.route) {
-            SavingScreenWrapper(viewModel, auth = auth, innerPadding = innerPadding, navController = navController)
+            SavingScreenWrapper(viewModel,
+                auth = auth,
+                innerPadding = innerPadding,
+                navController = navController)
         }
 
         composable(Pantallas.CreateSavingScreen.route) {
@@ -44,6 +53,28 @@ fun GraficaDeNavegacion(viewModel: RecordatoriosViewModel,
 
         composable(Pantallas.CreateReminderScreen.route) {
             CreateRemindScreen(viewModel, innerPadding = innerPadding, navController = navController)
+        }
+
+        composable(Pantallas.EditSavingScreen.route) {
+            EditSavingScreen(viewModel, innerPadding = innerPadding, navController = navController)
+        }
+
+        composable("editar_recordatorio/{id}/{titulo}/{imagen}/{descripcion}/{fecha}/{hora}", arguments = listOf(
+            navArgument("id") { type = NavType.IntType },
+            navArgument("titulo") { type = NavType.StringType },
+            navArgument("imagen") { type = NavType.StringType },
+            navArgument("descripcion") { type = NavType.StringType },
+            navArgument("fecha") { type = NavType.StringType },
+            navArgument("hora") { type = NavType.StringType },)) {
+            EditRemindScreen(viewModel,
+                innerPadding = innerPadding,
+                navController = navController,
+                it.arguments!!.getInt("id"),
+                it.arguments!!.getString("titulo"),
+                it.arguments!!.getString("imagen"),
+                it.arguments!!.getString("descripcion"),
+                it.arguments!!.getString("fecha"),
+                it.arguments!!.getString("hora"),)
         }
 
         composable(Pantallas.FavoriteScreen.route) {
@@ -79,7 +110,7 @@ fun ExitApp() {
 }
 
 @Composable
-fun SavingScreenWrapper(viewModel: RecordatoriosViewModel, auth: Boolean, innerPadding: PaddingValues, navController: NavController) {
+fun SavingScreenWrapper(viewModel: ViewModelReminds, auth: Boolean, innerPadding: PaddingValues, navController: NavController) {
     if (auth) {
         SavingScreen(viewModel, innerPadding = innerPadding, navController = navController)
     } else {

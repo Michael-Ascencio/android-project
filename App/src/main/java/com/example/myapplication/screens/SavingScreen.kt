@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.navigation.Pantallas
-import com.example.myapplication.viewmodel.RecordatoriosViewModel
+import com.example.myapplication.viewmodel.ViewModelReminds
 
 @Composable
 fun SavingScreen(
-    viewModel: RecordatoriosViewModel,
+    viewModel: ViewModelReminds,
     innerPadding: PaddingValues,
     navController: NavController
 ) {
@@ -28,7 +28,7 @@ fun SavingScreen(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-            .background(Color.White), // Fondo blanco para que coincida con la imagen
+            .background(Color.White), // Fondo blanco para que coincida con el mock
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

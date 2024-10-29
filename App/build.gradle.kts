@@ -82,4 +82,13 @@ dependencies {
     val nav_version = "2.8.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+    //Manejo de imagenes con coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    //Manejo de compose para el menú desplegable
+    implementation("androidx.compose.ui:ui:1.7.4")
+    implementation("androidx.compose.material:material:1.7.4")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.7.4")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
+    implementation("androidx.compose.runtime:runtime:1.7.4")
 }

@@ -24,7 +24,7 @@ import com.example.myapplication.viewmodel.ViewModelReminds
 import java.util.*
 
 @Composable
-fun CreateSavingScreen(
+fun EditSavingScreen(
     viewModel: ViewModelReminds,
     innerPadding: PaddingValues,
     navController: NavController

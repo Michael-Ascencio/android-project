@@ -1,5 +1,8 @@
 package com.example.myapplication.navigation
 
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 sealed class Pantallas(var route: String){
 
     object RemindScreen : Pantallas("recordatorio")
@@ -9,6 +12,8 @@ sealed class Pantallas(var route: String){
     object CreateReminderScreen : Pantallas("creador_de_recordatorios")
 
     object CreateSavingScreen : Pantallas("creador_de_ahorros")
+
+    object EditSavingScreen : Pantallas("Editar_ahorro")
 
     object FavoriteScreen : Pantallas("favoritos")
 

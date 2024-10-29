@@ -6,7 +6,7 @@ import com.example.myapplication.models.Reminds
 
 @Database(
     entities = [Reminds::class],
-    version = 1,
+    version = 2,
     exportSchema = false)
 
 abstract class DataBaseRemind: RoomDatabase() {

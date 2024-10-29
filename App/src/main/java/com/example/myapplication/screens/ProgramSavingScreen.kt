@@ -13,10 +13,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.viewmodel.RecordatoriosViewModel
+import com.example.myapplication.viewmodel.ViewModelReminds
 
 @Composable
-fun ProgramSavingScreen(viewModel: RecordatoriosViewModel, innerPadding: PaddingValues) {
+fun ProgramSavingScreen(viewModel: ViewModelReminds, innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
             .padding(innerPadding)

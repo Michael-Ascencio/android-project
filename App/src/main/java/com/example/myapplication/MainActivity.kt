@@ -32,11 +32,14 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import com.example.myapplication.navigation.GraficaDeNavegacion
 import com.example.myapplication.navigation.NavBarBody
 import com.example.myapplication.navigation.NavBarHeader
 import com.example.myapplication.navigation.NavigationItem
 import com.example.myapplication.navigation.Pantallas
+import com.example.myapplication.room.DataBaseRemind
+import com.example.myapplication.room.DataBaseRemindDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.example.myapplication.viewmodel.ViewModelReminds
@@ -82,11 +85,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setupAuth()
+        val database = Room.databaseBuilder(
+            this@MainActivity,
+            DataBaseRemind::class.java,
+            "recordatorios"
+        ).build()
+
+        val dao = database.recordatorioDao()
+
         setContent {
             MyApplicationTheme {
                 MyAppContent(authenticate = { authCallback ->
                     authenticate(authCallback)
-                })
+                }, dao = dao)
             }
         }
     }
@@ -94,7 +105,8 @@ class MainActivity : AppCompatActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit) {
+fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit,
+                 dao: DataBaseRemindDao) {
     var auth by remember { mutableStateOf(false) }
 
     // Lista de opciones del menú
@@ -155,6 +167,9 @@ fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+
+    val viewModel = ViewModelReminds(dao)
 
     ModalNavigationDrawer(
         gesturesEnabled = drawerState.isOpen,
