@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
 import com.example.myapplication.navigation.Pantallas
 import com.example.myapplication.viewmodel.ViewModelReminds
 
@@ -143,8 +142,11 @@ fun NoRecordatoriosView(navController: NavController) {
 fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewModel: ViewModelReminds) {
     val state = viewModel.state.value
 
-    Column(modifier = Modifier.padding(it)) {
-        LazyColumn {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            contentPadding = PaddingValues(0.dp),
+            verticalArrangement = Arrangement.Top
+        ) {
             items(state.listaRecordatorios.size) { index ->
                 val recordatorio = state.listaRecordatorios[index]
                 val showMenu = remember { mutableStateOf(false) }
@@ -161,10 +163,12 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
                     // Carga de imagen usando Coil
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = recordatorio.imagen ?: R.drawable.placeholder, // Usa la imagen por defecto si `imagen` es null
-                            error = painterResource(id = R.drawable.error),  // Imagen de error
+                            if (recordatorio.imagen == "")
+                                R.drawable.placeholder
+                            else
+                                recordatorio.imagen,
+                                error = painterResource(id = R.drawable.error),  // Imagen de error
                         ),
-
                         contentDescription = null,
                         modifier = Modifier
                             .size(100.dp)
@@ -185,14 +189,12 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
-                        //Se debe eliminar, es para ver el valor de imagen
                         Text(
-                            text = recordatorio.imagen + " Está es la ruta de imagen",
+                            text = recordatorio.imagen + " Este es la ruta de la imagen",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
-
                         Text(
                             text = recordatorio.descripcion,
                             fontSize = 14.sp,
@@ -219,7 +221,12 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
 
                     // Ícono de favorito
                     IconButton(
-                        onClick = { /* Acción para marcar como favorito */ }
+                        onClick = {
+                            // Crear una copia del recordatorio y alternar el valor de favorito
+                            val nuevoRecordatorio = recordatorio.copy(favorito = !recordatorio.favorito)
+                            // Actualiza el recordatorio en la base de datos
+                            viewModel.actualizarRecordatorio(nuevoRecordatorio)
+                        }
                     ) {
                         Icon(
                             imageVector = if (recordatorio.favorito) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -228,7 +235,7 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
                         )
                     }
 
-                    //Menú desplegable para editar y eliminar
+                    // Menú desplegable para editar y eliminar
                     IconButton(onClick = { showMenu.value = true }) {
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Más opciones")
                     }
@@ -240,14 +247,16 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
                         DropdownMenuItem(
                             onClick = {
                                 showMenu.value = false
-                                navController.navigate("editar_recordatorio/${recordatorio.id}/${recordatorio.titulo}/${recordatorio.descripcion}/${recordatorio.fecha}/${recordatorio.hora}")
+                                // Ejemplo de navegación al hacer clic en editar
+                                navController.navigate("editar_recordatorio/${recordatorio.id}/${recordatorio.titulo}/${recordatorio.imagen}/${recordatorio.descripcion}/${recordatorio.fecha}/${recordatorio.hora}")
+
                             },
                             text = { Text("Editar") },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Edit, // Usa el ícono de edición
+                                    imageVector = Icons.Default.Edit,
                                     contentDescription = "Editar",
-                                    tint = Color.Gray // Cambia el color si deseas un estilo específico
+                                    tint = Color.Gray
                                 )
                             }
                         )
@@ -259,9 +268,9 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
                             text = { Text("Eliminar") },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Delete, // Usa el ícono de eliminación
+                                    imageVector = Icons.Default.Delete,
                                     contentDescription = "Eliminar",
-                                    tint = Color.Gray // Cambia el color si deseas un estilo específico
+                                    tint = Color.Gray
                                 )
                             }
                         )

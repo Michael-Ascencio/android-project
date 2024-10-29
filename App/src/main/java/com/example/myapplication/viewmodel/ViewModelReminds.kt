@@ -34,4 +34,6 @@ class ViewModelReminds (
     fun eliminarRecordatorio(recordatorio: Reminds) = viewModelScope.launch {
         dao.eliminarRecordatorio(recordatorio = recordatorio)
     }
+
+
 }

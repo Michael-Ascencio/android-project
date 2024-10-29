@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.models.Reminds
 import com.example.myapplication.navigation.Pantallas
 import com.example.myapplication.viewmodel.ViewModelReminds
 import java.util.*
@@ -28,23 +29,23 @@ fun EditRemindScreen(
     viewModel: ViewModelReminds,
     innerPadding: PaddingValues,
     navController: NavController,
-    int: Int,
-    string: String?,
-    string1: String?,
-    string2: String?,
-    string3: String?,
-    string4: String?
+    id: Int,
+    titulo: String?,
+    imagen: String?,
+    descripcion: String?,
+    fecha: String?,
+    hora: String?
 ) {
     val context = LocalContext.current
 
     var selectedFrequency by remember { mutableStateOf("Diario") }
     var expanded by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf("Selecciona la fecha") }
-    var selectedTime by remember { mutableStateOf("Selecciona la hora") }
+    var selectedDate by remember { mutableStateOf(fecha ?: "Selecciona la fecha") }
+    var selectedTime by remember { mutableStateOf(hora ?: "Selecciona la hora") }
 
-    var nombreAhorro by remember { mutableStateOf("") }
+    var nombreAhorro by remember { mutableStateOf(titulo ?: "") }
     var shortDescription by remember { mutableStateOf("") }
-    var longDescription by remember { mutableStateOf("") }
+    var longDescription by remember { mutableStateOf(descripcion ?: "") }
 
     val calendar = Calendar.getInstance()
 
@@ -56,7 +57,7 @@ fun EditRemindScreen(
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Dialogo de timer
+    // Dialogo de tiempo
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
@@ -69,7 +70,7 @@ fun EditRemindScreen(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-            .background(Color(0xFFFEE2C0))  // Amarillo
+            .background(Color(0xFFFEE2C0)) // Amarillo
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -157,8 +158,8 @@ fun EditRemindScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Dropdown for frequency
-        Text("Selecciona cada cuanto quieres que suene el recordatorio.", fontSize = 16.sp)
+        // Dropdown para frecuencia
+        Text("Selecciona cada cuánto quieres que suene el recordatorio.", fontSize = 16.sp)
 
         Box(
             modifier = Modifier
@@ -187,10 +188,10 @@ fun EditRemindScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Date picker
+        // Selector de fecha
         Text("Selecciona la fecha y hora inicial del ahorro.", fontSize = 16.sp)
 
-        // Date
+        // Selector de fecha
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -203,7 +204,7 @@ fun EditRemindScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Time picker
+        // Selector de hora
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -216,14 +217,30 @@ fun EditRemindScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón de Crear
+        // Botón de Actualizar
         Button(
             onClick = {
-                Toast.makeText(context, "Ahorro creado", Toast.LENGTH_SHORT).show()
+                // Crear una copia del recordatorio con los nuevos valores
+                val nuevoRecordatorio = Reminds(
+                    id = id,
+                    titulo = nombreAhorro,
+                    imagen = imagen ?: "",
+                    descripcion = longDescription,
+                    fecha = selectedDate,
+                    hora = selectedTime,
+                    favorito = true,
+                    borrado = false,
+                )
+
+                // Actualiza el recordatorio en la base de datos
+                viewModel.actualizarRecordatorio(nuevoRecordatorio)
+
+                Toast.makeText(context, "Recordatorio actualizado", Toast.LENGTH_SHORT).show()
+                navController.navigate(Pantallas.RemindScreen.route) // Navega de vuelta a la pantalla de recordatorios
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Crear")
+            Text(text = "Actualizar")
         }
     }
 }
