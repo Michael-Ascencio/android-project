@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -97,12 +96,15 @@ fun CreateRemindForm(
     var shortDescription by remember { mutableStateOf("") }
     var longDescription by remember { mutableStateOf("") }
 
+    // Estado para la imagen
+    var imagenUrl by remember { mutableStateOf(recordatorio?.imagen ?: "") }  // Usar la imagen del recordatorio si está disponible
+
     val calendar = Calendar.getInstance()
 
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            selectedDate = "$dayOfMonth/${month + 1}/$year"
+            selectedDate = "$dayOfMonth-${month + 1}-$year"  // Cambiar la barra por guiones
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -133,12 +135,15 @@ fun CreateRemindForm(
                 modifier = Modifier
                     .size(100.dp)
                     .background(Color.LightGray, RoundedCornerShape(8.dp))
-                    .clickable { /* Manejar el clic para añadir imagen */ },
+                    .clickable {
+                        // Manejar el clic para añadir imagen (puedes implementar la lógica aquí)
+                    },
                 contentAlignment = Alignment.Center
             ) {
-                if (recordatorio?.imagen != null) {
+                // Mostrar la imagen seleccionada o el placeholder
+                if (imagenUrl.isNotBlank()) {
                     Image(
-                        painter = rememberAsyncImagePainter(model = recordatorio.imagen),
+                        painter = rememberAsyncImagePainter(model = imagenUrl),
                         contentDescription = null,
                         modifier = Modifier.size(100.dp)
                     )
