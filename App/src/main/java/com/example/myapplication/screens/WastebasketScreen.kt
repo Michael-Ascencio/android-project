@@ -13,10 +13,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.viewmodel.ViewModelReminds
+import com.example.myapplication.viewmodel.ViewModelDatabase
 
 @Composable
-fun WastebasketScreen(viewModel: ViewModelReminds, innerPadding: PaddingValues) {
+fun WastebasketScreen(viewModel: ViewModelDatabase, innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
             .padding(innerPadding)

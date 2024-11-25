@@ -40,9 +40,11 @@ import com.example.myapplication.navigation.NavigationItem
 import com.example.myapplication.navigation.Pantallas
 import com.example.myapplication.room.DataBaseRemind
 import com.example.myapplication.room.DataBaseRemindDao
+import com.example.myapplication.room.DataBaseSaving
+import com.example.myapplication.room.DataBaseSavingDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import com.example.myapplication.viewmodel.ViewModelReminds
+import com.example.myapplication.viewmodel.ViewModelDatabase
 
 class MainActivity : AppCompatActivity() {
 
@@ -85,19 +87,27 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setupAuth()
-        val database = Room.databaseBuilder(
+
+        // Inicializar ambas bases de datos
+        val databaseRemind = Room.databaseBuilder(
             this@MainActivity,
             DataBaseRemind::class.java,
             "recordatorios"
         ).build()
+        val daoRemind = databaseRemind.recordatorioDao()
 
-        val dao = database.recordatorioDao()
+        val databaseSaving = Room.databaseBuilder(
+            this@MainActivity,
+            DataBaseSaving::class.java,
+            "ahorros"
+        ).build()
+        val daoSaving = databaseSaving.savingDao()
 
         setContent {
             MyApplicationTheme {
                 MyAppContent(authenticate = { authCallback ->
                     authenticate(authCallback)
-                }, dao = dao)
+                }, daoRemind = daoRemind, daoSaving = daoSaving)
             }
         }
     }
@@ -105,8 +115,11 @@ class MainActivity : AppCompatActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit,
-                 dao: DataBaseRemindDao) {
+fun MyAppContent(
+    authenticate: (authCallback: (Boolean) -> Unit) -> Unit,
+    daoRemind: DataBaseRemindDao,
+    daoSaving: DataBaseSavingDao
+) {
     var auth by remember { mutableStateOf(false) }
 
     // Lista de opciones del menú
@@ -168,8 +181,8 @@ fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit,
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-
-    val viewModel = ViewModelReminds(dao)
+    // Se pasa el view model modificado con ambos DAOs
+    val viewModel = ViewModelDatabase(daoRemind = daoRemind, daoSaving = daoSaving)
 
     ModalNavigationDrawer(
         gesturesEnabled = drawerState.isOpen,
@@ -202,9 +215,7 @@ fun MyAppContent(authenticate: (authCallback: (Boolean) -> Unit) -> Unit,
                     drawerState = drawerState
                 )
             }
-        ) {
-            innerPadding ->
-            val viewModel = ViewModelReminds(dao)
+        ) { innerPadding ->
             GraficaDeNavegacion(viewModel = viewModel, navController = navController, innerPadding = innerPadding, auth = auth)
         }
     }

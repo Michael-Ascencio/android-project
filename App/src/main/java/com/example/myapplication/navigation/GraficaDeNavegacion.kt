@@ -22,10 +22,10 @@ import com.example.myapplication.screens.ProgramSavingScreen
 import com.example.myapplication.screens.RemindScreen
 import com.example.myapplication.screens.SavingScreen
 import com.example.myapplication.screens.WastebasketScreen
-import com.example.myapplication.viewmodel.ViewModelReminds
+import com.example.myapplication.viewmodel.ViewModelDatabase
 
 @Composable
-fun GraficaDeNavegacion(viewModel: ViewModelReminds,
+fun GraficaDeNavegacion(viewModel: ViewModelDatabase,
                         navController: NavHostController,
                         innerPadding: PaddingValues,
                         auth: Boolean)
@@ -55,26 +55,72 @@ fun GraficaDeNavegacion(viewModel: ViewModelReminds,
             CreateRemindScreen(viewModel, innerPadding = innerPadding, navController = navController)
         }
 
-        composable(Pantallas.EditSavingScreen.route) {
-            EditSavingScreen(viewModel, innerPadding = innerPadding, navController = navController)
-        }
-
-        composable("editar_recordatorio/{id}/{titulo}/{imagen}/{descripcion}/{fecha}/{hora}", arguments = listOf(
+        composable(
+            "editar_recordatorio/{id}/{titulo}/{repetir}/{imagen}/{descripcion_corta}/{descripcion_larga}/{frecuencia}/{fecha}/{hora}/{favorito}/{borrado}",
+            arguments = listOf(
             navArgument("id") { type = NavType.IntType },
             navArgument("titulo") { type = NavType.StringType },
+            navArgument("repetir") { type = NavType.BoolType },
             navArgument("imagen") { type = NavType.StringType },
-            navArgument("descripcion") { type = NavType.StringType },
+            navArgument("descripcion_corta") { type = NavType.StringType },
+            navArgument("descripcion_larga") { type = NavType.StringType },
+            navArgument("frecuencia") { type = NavType.StringType },
             navArgument("fecha") { type = NavType.StringType },
-            navArgument("hora") { type = NavType.StringType },)) {
+            navArgument("hora") { type = NavType.StringType },
+            navArgument("favorito") { type = NavType.BoolType },
+            navArgument("borrado") { type = NavType.BoolType },)) {
             EditRemindScreen(viewModel,
                 innerPadding = innerPadding,
                 navController = navController,
                 it.arguments!!.getInt("id"),
                 it.arguments!!.getString("titulo"),
+                it.arguments!!.getBoolean("repetir"),
                 it.arguments!!.getString("imagen"),
-                it.arguments!!.getString("descripcion"),
+                it.arguments!!.getString("descripcion_corta"),
+                it.arguments!!.getString("descripcion_larga"),
+                it.arguments!!.getString("frecuencia"),
                 it.arguments!!.getString("fecha"),
-                it.arguments!!.getString("hora"),)
+                it.arguments!!.getString("hora"),
+                it.arguments!!.getBoolean("favorito"),
+                it.arguments!!.getBoolean("borrado"))
+        }
+
+        composable(
+            "editar_ahorro/{id}/{titulo}/{frecuencia}/{imagen}/{descripcion_corta}/{descripcion_larga}/{monto_objetivo}/{monto_actual}/{fecha_inicial}/{fecha_limite}/{hora}/{favorito}/{borrado}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.IntType },
+                navArgument("titulo") { type = NavType.StringType },
+                navArgument("frecuencia") { type = NavType.StringType },
+                navArgument("imagen") { type = NavType.StringType },
+                navArgument("descripcion_corta") { type = NavType.StringType },
+                navArgument("descripcion_larga") { type = NavType.StringType },
+                navArgument("monto_objetivo") { type = NavType.StringType },
+                navArgument("monto_actual") { type = NavType.StringType },
+                navArgument("fecha_inicial") { type = NavType.StringType },
+                navArgument("fecha_limite") { type = NavType.StringType },
+                navArgument("hora") { type = NavType.StringType },
+                navArgument("favorito") { type = NavType.BoolType },
+                navArgument("borrado") { type = NavType.BoolType }
+            )
+        ) {
+            EditSavingScreen(
+                viewModel = viewModel,
+                innerPadding = innerPadding,
+                navController = navController,
+                id = it.arguments!!.getInt("id"),
+                titulo = it.arguments!!.getString("titulo")!!,
+                frecuencia = it.arguments!!.getString("frecuencia")!!,
+                imagen = it.arguments!!.getString("imagen")!!,
+                descripcionCorta = it.arguments!!.getString("descripcion_corta")!!,
+                descripcionLarga = it.arguments!!.getString("descripcion_larga")!!,
+                montoObjetivo = it.arguments!!.getString("monto_objetivo")!!,
+                montoActual = it.arguments!!.getString("monto_actual")!!,
+                fechaInicial = it.arguments!!.getString("fecha_inicial")!!,
+                fechaLimite = it.arguments!!.getString("fecha_limite")!!,
+                hora = it.arguments!!.getString("hora")!!,
+                favorito = it.arguments!!.getBoolean("favorito"),
+                borrado = it.arguments!!.getBoolean("borrado")
+            )
         }
 
         composable(Pantallas.FavoriteScreen.route) {
@@ -110,7 +156,7 @@ fun ExitApp() {
 }
 
 @Composable
-fun SavingScreenWrapper(viewModel: ViewModelReminds, auth: Boolean, innerPadding: PaddingValues, navController: NavController) {
+fun SavingScreenWrapper(viewModel: ViewModelDatabase, auth: Boolean, innerPadding: PaddingValues, navController: NavController) {
     if (auth) {
         SavingScreen(viewModel, innerPadding = innerPadding, navController = navController)
     } else {

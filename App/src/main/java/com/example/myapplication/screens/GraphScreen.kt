@@ -3,7 +3,6 @@ package com.example.myapplication.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,7 +49,7 @@ fun GraphScreen(innerPadding: PaddingValues) {
 
         // Texto informativo
         Text(
-            text = "Actualmente no tienes ahorros y por ende no tienes gráficas",
+            text = "Próximamente",
             fontSize = 18.sp,
             color = Color.Black
         )

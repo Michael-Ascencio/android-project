@@ -32,15 +32,15 @@ import com.example.myapplication.R
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import com.example.myapplication.navigation.Pantallas
-import com.example.myapplication.viewmodel.ViewModelReminds
+import com.example.myapplication.viewmodel.ViewModelDatabase
 
 @Composable
 fun RemindScreen(
-    viewModel: ViewModelReminds,
+    viewModel: ViewModelDatabase,
     innerPadding: PaddingValues,
     navController: NavController
 ) {
-    val state = viewModel.state.value // Obtiene el estado del ViewModel
+    val state = viewModel.remindState.value // Obtiene el estado del ViewModel
 
     Box(
         modifier = Modifier
@@ -139,8 +139,8 @@ fun NoRecordatoriosView(navController: NavController) {
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewModel: ViewModelReminds) {
-    val state = viewModel.state.value
+fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewModel: ViewModelDatabase) {
+    val state = viewModel.remindState.value
 
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -190,13 +190,7 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
                             color = Color.Black
                         )
                         Text(
-                            text = recordatorio.imagen + " Este es la ruta de la imagen",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                        Text(
-                            text = recordatorio.descripcion,
+                            text = recordatorio.descripcion_corta,
                             fontSize = 14.sp,
                             color = Color.Gray,
                             maxLines = 1,
@@ -247,8 +241,7 @@ fun ContentRemindScreen(it: PaddingValues, navController: NavController, viewMod
                         DropdownMenuItem(
                             onClick = {
                                 showMenu.value = false
-                                // Ejemplo de navegación al hacer clic en editar
-                                navController.navigate("editar_recordatorio/${recordatorio.id}/${recordatorio.titulo}/${recordatorio.imagen}/${recordatorio.descripcion}/${recordatorio.fecha}/${recordatorio.hora}")
+                                navController.navigate("editar_recordatorio/${recordatorio.id}/${recordatorio.titulo}/${recordatorio.repetir}/${recordatorio.imagen}/${recordatorio.descripcion_corta}/${recordatorio.descripcion_larga}/${recordatorio.frecuencia}/${recordatorio.fecha}/${recordatorio.hora}/${recordatorio.favorito}/${recordatorio.borrado}")
 
                             },
                             text = { Text("Editar") },

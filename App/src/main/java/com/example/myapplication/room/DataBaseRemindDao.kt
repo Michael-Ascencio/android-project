@@ -17,6 +17,9 @@ interface DataBaseRemindDao {
     @Query("SELECT * FROM recordatorios WHERE id = :id")
     fun obtenerRecordatorioPorId(id: Int): Flow<Reminds>
 
+    @Query("SELECT * FROM recordatorios WHERE favorito = 1")
+    fun obtenerFavoritos(): Flow<List<Reminds>>
+
     @Insert
     suspend fun agregarRecordatorio(recordatorio: Reminds)
 

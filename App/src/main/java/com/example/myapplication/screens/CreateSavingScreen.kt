@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -16,61 +17,81 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.models.Saving
 import com.example.myapplication.navigation.Pantallas
-import com.example.myapplication.viewmodel.ViewModelReminds
+import com.example.myapplication.viewmodel.ViewModelDatabase
 import java.util.*
+
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.material3.TextField
 
 @Composable
 fun CreateSavingScreen(
-    viewModel: ViewModelReminds,
+    viewModel: ViewModelDatabase,
     innerPadding: PaddingValues,
     navController: NavController
 ) {
     val context = LocalContext.current
 
-    // Variables de estado
-    var selectedFrequency by remember { mutableStateOf("Diario") }
-    var expanded by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf("Selecciona la fecha") }
-    var selectedTime by remember { mutableStateOf("Selecciona la hora") }
-
-    var recordatorioTitulo by remember { mutableStateOf("") }
+    // Estados para los campos editables
+    var savingTitle by remember { mutableStateOf("") }
     var shortDescription by remember { mutableStateOf("") }
     var longDescription by remember { mutableStateOf("") }
-    var reminderRepeat by remember { mutableStateOf(false) } // Estado de la Checkbox
+    var targetAmount by remember { mutableStateOf("") }
+    var currentAmount by remember { mutableStateOf("") }
+    var selectedFrequency by remember { mutableStateOf("Diario") }
+    var selectedStartDate by remember { mutableStateOf("Selecciona la fecha") }
+    var selectedEndDate by remember { mutableStateOf("Selecciona la fecha") }
+    var selectedTime by remember { mutableStateOf("Selecciona la hora") }
+    var expanded by remember { mutableStateOf(false) }
 
     val calendar = Calendar.getInstance()
 
-    // Dialogo para seleccionar la fecha
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            selectedDate = "$dayOfMonth/${month + 1}/$year"
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
+            selectedStartDate = "$dayOfMonth-${month + 1}-$year"
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
     )
 
-    // Dialogo para seleccionar la hora
+    val endDatePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            selectedEndDate = "$dayOfMonth-${month + 1}-$year"
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
+
     val timePickerDialog = TimePickerDialog(
         context,
         { _, hourOfDay, minute ->
             selectedTime = String.format("%02d:%02d", hourOfDay, minute)
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        false
     )
 
-    // Estructura de la pantalla
     Column(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-            .background(Color(0xFFF4E0E1))  // Fondo rosa pálido
+            .background(Color(0xFFF4E0E1)) // Fondo suave
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Cabecera (Imagen, Título, Descripción Corta, Botón de cerrar)
+        // Header with title and image
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -78,7 +99,6 @@ fun CreateSavingScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Botón de "Añadir Imagen"
             Box(
                 modifier = Modifier
                     .size(100.dp)
@@ -93,46 +113,39 @@ fun CreateSavingScreen(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                // Título
                 BasicTextField(
-                    value = recordatorioTitulo,
-                    onValueChange = { recordatorioTitulo = it },
+                    value = savingTitle,
+                    onValueChange = { savingTitle = it },
                     decorationBox = { innerTextField ->
-                        Row(
-                            Modifier
-                                .background(Color.Transparent)
-                                .padding(4.dp)
-                        ) {
-                            if (recordatorioTitulo.isEmpty()) {
-                                Text("Título", color = Color.Gray)
-                            }
-                            innerTextField()
+                        if (savingTitle.isEmpty()) {
+                            Text(
+                                text = "Título",
+                                style = TextStyle(color = Color.Gray, fontSize = 18.sp)
+                            )
                         }
+                        innerTextField()
                     },
                     textStyle = LocalTextStyle.current.copy(fontSize = 18.sp)
                 )
 
-                // Descripción corta
+                Spacer(modifier = Modifier.height(8.dp))
+
                 BasicTextField(
                     value = shortDescription,
                     onValueChange = { shortDescription = it },
                     decorationBox = { innerTextField ->
-                        Row(
-                            Modifier
-                                .background(Color.Transparent)
-                                .padding(4.dp)
-                        ) {
-                            if (shortDescription.isEmpty()) {
-                                Text("Descripción Corta", color = Color.Gray)
-                            }
-                            innerTextField()
+                        if (shortDescription.isEmpty()) {
+                            Text(
+                                text = "Descripción Corta",
+                                style = TextStyle(color = Color.Gray, fontSize = 14.sp)
+                            )
                         }
+                        innerTextField()
                     },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Gray)
+                    textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
                 )
             }
 
-            // Botón de "Cerrar" (X)
             IconButton(onClick = {
                 Toast.makeText(context, "Cerrando...", Toast.LENGTH_SHORT).show()
                 navController.navigate(Pantallas.SavingScreen.route)
@@ -140,66 +153,75 @@ fun CreateSavingScreen(
                 Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.Black)
             }
         }
+        Spacer(modifier = Modifier.height(8.dp))
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Caja para la descripción larga del recordatorio
         TextField(
             value = longDescription,
             onValueChange = { longDescription = it },
-            label = { Text("Esta es una breve descripción...") },
+            label = { Text("Descripción larga") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Checkbox para repetir el recordatorio
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = reminderRepeat,
-                onCheckedChange = { reminderRepeat = it }
+        TextField(
+            value = targetAmount,
+            onValueChange = { targetAmount = it },
+            label = { Text("Monto objetivo") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
             )
-            Text("¿Desea que el recordatorio suene más de una vez?")
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = currentAmount,
+            onValueChange = { currentAmount = it },
+            label = { Text("Monto actual") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
+            )
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Dropdown de frecuencia
+        Text("Frecuencia", fontSize = 16.sp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .background(Color.LightGray)
+                .padding(8.dp)
+        ) {
+            Text(text = selectedFrequency, fontSize = 16.sp)
         }
 
-        if (reminderRepeat) {
-            // Dropdown para seleccionar frecuencia (si la checkbox está seleccionada)
-            Text("Seleccione cada cuanto quiere que suene el recordatorio.", fontSize = 16.sp)
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expanded = true }
-                    .background(Color.LightGray)
-                    .padding(8.dp)
-            ) {
-                Text(text = selectedFrequency, fontSize = 16.sp)
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            listOf("Diario", "Semanal", "Quincenal", "Mensual").forEach { frequency ->
+                DropdownMenuItem(
+                    text = { Text(text = frequency) },
+                    onClick = {
+                        selectedFrequency = frequency
+                        expanded = false
+                    }
+                )
             }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                listOf("Diario", "Semanal", "Quincenal", "Mensual").forEach { frequency ->
-                    DropdownMenuItem(
-                        text = { Text(text = frequency) },
-                        onClick = {
-                            selectedFrequency = frequency
-                            expanded = false
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Selección de fecha
-        Text("Selecciona la fecha y hora inicial del recordatorio.", fontSize = 16.sp)
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Fecha
+        // Selección de fechas
+        Text("Fecha Inicial", fontSize = 16.sp)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -207,12 +229,25 @@ fun CreateSavingScreen(
                 .background(Color.LightGray)
                 .padding(8.dp)
         ) {
-            Text(text = selectedDate, fontSize = 16.sp)
+            Text(text = selectedStartDate, fontSize = 16.sp)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Selección de hora
+        Text("Fecha Límite", fontSize = 16.sp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { endDatePickerDialog.show() }
+                .background(Color.LightGray)
+                .padding(8.dp)
+        ) {
+            Text(text = selectedEndDate, fontSize = 16.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Seleccionar Hora de recordatorio para el ahorro", fontSize = 16.sp)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -225,14 +260,38 @@ fun CreateSavingScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón de Crear
+        // Botón de guardar
         Button(
             onClick = {
-                Toast.makeText(context, "Recordatorio creado", Toast.LENGTH_SHORT).show()
+                if (
+                    savingTitle.isNotBlank() && shortDescription.isNotBlank() &&
+                    selectedStartDate != "Selecciona la fecha" && selectedEndDate != "Selecciona la fecha"
+                ) {
+                    val newSaving = Saving(
+                        titulo = savingTitle,
+                        imagen = "",
+                        descripcion_corta = shortDescription,
+                        descripcion_larga = longDescription,
+                        frecuencia = selectedFrequency,
+                        monto_objetivo = targetAmount,
+                        monto_actual = currentAmount,
+                        fecha_limite = selectedEndDate,
+                        fecha_inicial = selectedStartDate,
+                        hora = selectedTime,
+                        favorito = false,
+                        borrado = false
+                    )
+                    viewModel.agregarAhorro(newSaving)
+                    Toast.makeText(context, "Ahorro creado", Toast.LENGTH_SHORT).show()
+                    navController.navigate(Pantallas.SavingScreen.route)
+                } else {
+                    Toast.makeText(context, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Crear")
+            Text(text = "Guardar")
         }
     }
 }
+
